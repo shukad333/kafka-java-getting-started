@@ -1,5 +1,6 @@
 package examples;
 
+import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.producer.*;
 
 import java.io.*;
@@ -20,13 +21,15 @@ public class ProducerExample {
 
         String[] users = {"eabara", "jsmith", "sgarcia", "jbernard", "htanaka", "awalther"};
         String[] items = {"book", "alarm clock", "t-shirts", "gift card", "batteries"};
+        AdminClient adminClient = AdminClient.create(props);
+        //admin client can create the topic here dynamically
+//        adminClient.createTopics()
         try (final Producer<String, String> producer = new KafkaProducer<>(props)) {
             final Random rnd = new Random();
             final Long numMessages = 10L;
             for (Long i = 0L; i < numMessages; i++) {
                 String user = users[rnd.nextInt(users.length)];
                 String item = items[rnd.nextInt(items.length)];
-
                 producer.send(
                         new ProducerRecord<>(topic, user, item),
                         (event, ex) -> {
